@@ -1,0 +1,8 @@
+.todos .filters .active,
+.todos .filters span:hover {
+  border-bottom: 2px solid red;
+}
+
+.todos .filters span {
+  cursor: pointer;
+}
