@@ -6,9 +6,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
+let todoData = [];
 const Todo = () => {
   const [todoList, setTodoList] = useState([]);
   const [name, setName] = useState("");
+  const [filter, setFilter] = useState("all");
   const handleChange = (e) => {
     setName(e.target.value);
   };
@@ -20,6 +22,7 @@ const Todo = () => {
       completed: false,
     };
     setTodoList([...todoList, todo]);
+    todoData.push(todo);
     setName("");
     toast.success("Add todo success");
   };
@@ -32,6 +35,7 @@ const Todo = () => {
         return todo;
       }),
     );
+    todoData = todoList;
     toast.success("Update todo success");
   };
   const handleRemove = (id) => {
@@ -43,6 +47,7 @@ const Todo = () => {
           label: "Yes",
           onClick: () => {
             setTodoList(todoList.filter((todo) => todo.id !== id));
+            todoData = todoList;
             toast.success("Delete todo success");
           },
         },
@@ -61,6 +66,7 @@ const Todo = () => {
           label: "Yes",
           onClick: () => {
             setTodoList([]);
+            todoData = [];
             toast.success("Delete all todo success");
           },
         },
@@ -70,14 +76,42 @@ const Todo = () => {
       ],
     });
   };
+  const handleFilter = (type) => {
+    setFilter(type);
+    const status = type === "completed";
+    setTodoList(
+      todoData.filter((todo) => {
+        if (type !== "all") {
+          return todo.completed === status;
+        }
+        return true;
+      }),
+    );
+  };
+
   return (
     <div className="todos">
       <div className="w-50 mx-auto">
         <h1 className="text-center mb-3">Todo App</h1>
         <div className="filters d-flex justify-content-between mb-3">
-          <span className="active">All</span>
-          <span>Active</span>
-          <span>Completed</span>
+          <span
+            className={filter === "all" ? "active" : ""}
+            onClick={() => handleFilter("all")}
+          >
+            All
+          </span>
+          <span
+            className={filter === "active" ? "active" : ""}
+            onClick={() => handleFilter("active")}
+          >
+            Active
+          </span>
+          <span
+            className={filter === "completed" ? "active" : ""}
+            onClick={() => handleFilter("completed")}
+          >
+            Completed
+          </span>
         </div>
         <form action="" onSubmit={handleAdd}>
           <div className="input-group">
