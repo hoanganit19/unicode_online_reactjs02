@@ -4,6 +4,8 @@ import { useState } from "react";
 import { uid } from "../utils/uid";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { confirmAlert } from "react-confirm-alert"; // Import
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 const Todo = () => {
   const [todoList, setTodoList] = useState([]);
   const [name, setName] = useState("");
@@ -20,6 +22,53 @@ const Todo = () => {
     setTodoList([...todoList, todo]);
     setName("");
     toast.success("Add todo success");
+  };
+  const handleCompleted = (id, status) => {
+    setTodoList(
+      todoList.map((todo) => {
+        if (todo.id === id) {
+          todo.completed = status;
+        }
+        return todo;
+      }),
+    );
+    toast.success("Update todo success");
+  };
+  const handleRemove = (id) => {
+    confirmAlert({
+      title: "Are you sure delete?",
+      message: "Are you sure to do this.",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            setTodoList(todoList.filter((todo) => todo.id !== id));
+            toast.success("Delete todo success");
+          },
+        },
+        {
+          label: "No",
+        },
+      ],
+    });
+  };
+  const handleDeleteAll = () => {
+    confirmAlert({
+      title: "Are you sure delete?",
+      message: "Are you sure to do this.",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            setTodoList([]);
+            toast.success("Delete all todo success");
+          },
+        },
+        {
+          label: "No",
+        },
+      ],
+    });
   };
   return (
     <div className="todos">
@@ -51,10 +100,18 @@ const Todo = () => {
                   completed ? "completed" : ""
                 }`}
               >
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  onChange={(e) => handleCompleted(id, e.target.checked)}
+                />
                 <span>{name}</span>
                 <div>
-                  <button className="btn btn-danger btn-sm">Delete</button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleRemove(id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))
@@ -62,7 +119,12 @@ const Todo = () => {
             <p className="text-center py-2">No Todo</p>
           )}
 
-          <button className="btn btn-danger d-block mx-auto">Delete All</button>
+          <button
+            className="btn btn-danger d-block mx-auto"
+            onClick={handleDeleteAll}
+          >
+            Delete All
+          </button>
         </div>
       </div>
       <ToastContainer />
